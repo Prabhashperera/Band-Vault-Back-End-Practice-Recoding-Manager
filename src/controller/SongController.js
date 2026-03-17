@@ -1,32 +1,44 @@
+import cloudinary from "../config/Cloudinary.js";
 import { Song } from "../model/SongSchema.js";
+
 
 export const saveSong = async (req, res) => {
     try {
-        const { title, composer, imageUrl } = req.body;
+        const { title, composer } = req.body;
 
-        // Validation
         if (!title) {
             return res.status(400).json({ message: "Title is required" });
         }
 
-        // Check if song already exists
-        const existingSong = await Song.findOne({ title });
-        if (existingSong) {
-            return res.status(400).json({ message: "Song already exists" });
+        let imageUrl = "";
+
+        // If image exists → upload to cloudinary
+        if (req.file) {
+            const result = await cloudinary.uploader.upload_stream(
+                { folder: "bandvault_songs" },
+                (error, result) => {
+                    if (error) throw error;
+                    return result;
+                }
+            );
+
+            // Convert buffer to stream
+            const stream = result;
+            stream.end(req.file.buffer);
+
+            imageUrl = result.secure_url;
         }
 
-        // Create new song
         const newSong = new Song({
             title,
             composer,
-            imageUrl,
-            recordings: [] // initially empty
+            imageUrl
         });
 
         await newSong.save();
 
         res.status(201).json({
-            message: "Song saved successfully 🎵",
+            message: "Song created with image",
             song: newSong
         });
 

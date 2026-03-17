@@ -6,6 +6,6 @@ import { upload } from "../config/Multer.js";
 const SongRoute = express.Router();
 
 SongRoute.post('/save-song', upload.single("image"), saveSong)
-SongRoute.post('/save-record', addRecording)
+SongRoute.post('/save-record/:songId/recordings', upload.single("audio"),  addRecording)
 
 export default SongRoute;

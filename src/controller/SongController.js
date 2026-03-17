@@ -1,6 +1,5 @@
 import { Song } from "../model/SongSchema.js";
 
-
 export const saveSong = async (req, res) => {
     try {
         const { title, composer, imageUrl } = req.body;

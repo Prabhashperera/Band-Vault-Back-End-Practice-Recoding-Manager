@@ -13,6 +13,7 @@ const recordingSchema = new mongoose.Schema({
 const songSchema = new mongoose.Schema({
   title: { type: String, required: true },           // Song name
   composer: { type: String },
+  imageUrl: {type: String},
   recordings: [recordingSchema],
   createdAt: { type: Date, default: Date.now }
 });

@@ -1,6 +1,7 @@
 import express from 'express';
 import { connect } from 'mongoose';
 import { config } from 'dotenv';
+import SongRoute from './src/routes/SongRoute.js';
 config();
 
 const app = express();
@@ -13,6 +14,11 @@ const connectDB = async () => {
   try {
     const db = await connect(process.env.DB_URL);
     console.log("DB Connected : " + db.connection.name);
+
+
+    app.use('/api/songs', SongRoute);
+
+
   } catch (error) {
     console.error("MongoDB Connection Failed:");
     console.error(error);

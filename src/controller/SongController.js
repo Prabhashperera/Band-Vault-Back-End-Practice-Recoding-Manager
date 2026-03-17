@@ -110,3 +110,47 @@ export const addRecording = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+
+// Get All Songs
+export const getAllSongs = async (req, res) => {
+    try {
+        const songs = await Song.find()
+            .select("title imageUrl createdAt") // only needed fields
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            count: songs.length,
+            songs
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+
+
+export const getRecordings = async (req, res) => {
+    try {
+        const { songId } = req.params;
+
+        // Find the song by ID and return its recordings
+        const song = await Song.findById(songId).select("title recordings");
+
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        res.status(200).json({
+            songId: song._id,
+            title: song.title,
+            recordings: song.recordings
+        });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};

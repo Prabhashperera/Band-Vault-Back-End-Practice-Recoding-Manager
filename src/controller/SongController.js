@@ -136,8 +136,8 @@ export const getRecordings = async (req, res) => {
     try {
         const { songId } = req.params;
 
-        // Find the song by ID and return its recordings
-        const song = await Song.findById(songId).select("title recordings");
+        // ADDED 'imageUrl' to the select statement!
+        const song = await Song.findById(songId).select("title imageUrl recordings");
 
         if (!song) {
             return res.status(404).json({ message: "Song not found" });
@@ -146,6 +146,7 @@ export const getRecordings = async (req, res) => {
         res.status(200).json({
             songId: song._id,
             title: song.title,
+            imageUrl: song.imageUrl, // Send it to the frontend
             recordings: song.recordings
         });
 

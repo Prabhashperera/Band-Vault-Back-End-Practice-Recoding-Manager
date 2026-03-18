@@ -3,8 +3,12 @@ import { connect } from 'mongoose';
 import { config } from 'dotenv';
 import SongRoute from './src/routes/SongRoute.js';
 config();
+import cors from "cors";
+
+
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT || 3000;

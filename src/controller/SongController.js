@@ -55,6 +55,23 @@ export const saveSong = async (req, res) => {
     }
 };
 
+export const deleteSong = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const deletedSong = await Song.findByIdAndDelete(id);
+
+        if (!deletedSong) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        res.status(200).json({ message: "Song deleted successfully" });
+    } catch (error) {
+        console.error("Delete Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
 
 
 export const addRecording = async (req, res) => {

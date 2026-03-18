@@ -31,8 +31,8 @@ const connectDB = async () => {
 
 connectDB();
 
-app.get('/', (req, res) => {
-  res.send('BandVault Backend Running 🎸');
-});
+  server.get("/", (_req, res) => {
+    res.send("API is Running....");
+  });
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

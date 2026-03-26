@@ -11,13 +11,6 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 2. Routes (MUST be outside of the connectDB function)
-app.use('/api/songs', SongRoute);
-
-app.get("/", (_req, res) => {
-  res.send("API is Running....");
-});
-
 // 3. Database Connection
 const connectDB = async () => {
   try {
@@ -28,6 +21,14 @@ const connectDB = async () => {
   }
 };
 connectDB();
+
+// 2. Routes (MUST be outside of the connectDB function)
+app.use('/api/songs', SongRoute);
+
+app.get("/", (_req, res) => {
+  res.send("API is Running....");
+});
+
 
 // 4. Export for Vercel
 export default app;

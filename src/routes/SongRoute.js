@@ -1,5 +1,5 @@
 import express from "express";
-import { addRecording, deleteSong, editRecording, editSong, getAllSongs, getRecordings, saveSong } from "../controller/SongController.js";
+import { addRecording, deleteRecording, deleteSong, editRecording, editSong, getAllSongs, getRecordings, saveSong } from "../controller/SongController.js";
 import { upload } from "../config/Multer.js";
 
 
@@ -12,5 +12,6 @@ SongRoute.get('/get-recordings/:songId/recordings', getRecordings)
 SongRoute.delete('/delete-song/:id', deleteSong);
 SongRoute.put('/edit-song/:id', upload.single("image"), editSong);
 SongRoute.put('/edit-record/:songId/recordings/:recordingId', upload.single("audio"), editRecording);
+SongRoute.delete('/delete-record/:songId/recordings/:recordingId', deleteRecording);
 
 export default SongRoute;

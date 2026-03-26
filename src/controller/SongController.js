@@ -172,3 +172,97 @@ export const getRecordings = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+// Edit Song Details
+export const editSong = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { title, composer } = req.body;
+
+        const song = await Song.findById(id);
+
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        // Update basic fields if they are provided
+        if (title) song.title = title;
+        if (composer) song.composer = composer;
+
+        // If a new image is uploaded, send it to Cloudinary and update the URL
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                folder: "bandvault_songs"
+            });
+            song.imageUrl = result.secure_url;
+        }
+
+        await song.save();
+
+        res.status(200).json({
+            message: "Song updated successfully",
+            song
+        });
+
+    } catch (error) {
+        console.error("Edit Song Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
+
+// Edit Recording Details
+export const editRecording = async (req, res) => {
+    try {
+        // We need both the song's ID and the specific recording's ID
+        const { songId, recordingId } = req.params;
+        const { title, singer, key, notes, isFinalVersion } = req.body;
+
+        const song = await Song.findById(songId);
+
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        // Find the specific recording inside the song's recordings array
+        const recording = song.recordings.id(recordingId);
+
+        if (!recording) {
+            return res.status(404).json({ message: "Recording not found" });
+        }
+
+        // Update text fields if they are provided
+        if (title) recording.title = title;
+        if (singer !== undefined) recording.singer = singer;
+        if (key !== undefined) recording.key = key;
+        if (notes !== undefined) recording.notes = notes;
+
+        // Handle the Final Version flag logic
+        if (isFinalVersion !== undefined) {
+            const finalFlag = isFinalVersion === true || isFinalVersion === "true";
+            if (finalFlag) {
+                // Set all other recordings to false
+                song.recordings.forEach(r => r.isFinalVersion = false);
+            }
+            recording.isFinalVersion = finalFlag;
+        }
+
+        // If a new audio file is uploaded, replace the old Cloudinary URL
+        if (req.file) {
+            const result = await uploadToCloudinary(req.file.buffer, {
+                resource_type: "video" // Cloudinary uses 'video' for audio files
+            });
+            recording.cloudUrl = result.secure_url;
+        }
+
+        await song.save();
+
+        res.status(200).json({
+            message: "Recording updated successfully",
+            song
+        });
+
+    } catch (error) {
+        console.error("Edit Recording Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};

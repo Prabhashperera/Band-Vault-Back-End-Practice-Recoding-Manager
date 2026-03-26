@@ -266,3 +266,32 @@ export const editRecording = async (req, res) => {
         res.status(500).json({ message: "Server Error" });
     }
 };
+
+// Delete Recording
+export const deleteRecording = async (req, res) => {
+    try {
+        const { songId, recordingId } = req.params;
+
+        const song = await Song.findById(songId);
+
+        if (!song) {
+            return res.status(404).json({ message: "Song not found" });
+        }
+
+        // Filter out the recording that matches the ID we want to delete
+        song.recordings = song.recordings.filter(
+            (rec) => rec._id.toString() !== recordingId
+        );
+
+        await song.save();
+
+        res.status(200).json({ 
+            message: "Recording deleted successfully",
+            song
+        });
+
+    } catch (error) {
+        console.error("Delete Recording Error:", error);
+        res.status(500).json({ message: "Server Error" });
+    }
+};
